@@ -239,12 +239,14 @@ fi
 if [ "$AWS_S3_SECRET_KEY" != "" ]; then
   sudo -u "$PHABRICATOR_VCS_USER" ./bin/config set amazon-s3.secret-key "$AWS_S3_SECRET_KEY"
 fi
+APHLICT_PORT=80
 if [ "$SSL_TYPE" == "none" ]; then
   APHLICT_PROTOCOL="http"
-  APHLICT_PORT=80
+  [ -n "${EXT_APHLICT_PORT}" ] && APHLICT_PORT=${EXT_APHLICT_PORT}
 else
   APHLICT_PROTOCOL="https"
   APHLICT_PORT=443
+  [ -n "${EXT_APHLICT_SSL_PORT}" ] && APHLICT_PORT=${EXT_APHLICT_SSL_PORT}
 fi
 sudo -u "$PHABRICATOR_VCS_USER" ./bin/config set notification.servers '[{"type": "client","host": "'$PHABRICATOR_HOST'","port": '$APHLICT_PORT',"protocol": "'$APHLICT_PROTOCOL'","path": "/ws/"},{"type": "admin","host": "127.0.0.1","port": 22281,"protocol": "http"}]'
 unset APHLICT_PROTOCOL
